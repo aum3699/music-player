@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music player</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://kit.fontawesome.com/dca8260e03.js" crossorigin="anonymous"></script>
+    
+</head>
+<body>
+    <div class="container">
+     <div class="music-player">
+     <nav> 
+     <div class="circle">
+         <i class="fa-solid fa-chevron-left"></i>
+     </div>
+     <div class="circle">
+         <i class="fa-solid fa-bars"></i>
+     </div>
+     </nav>
+    <img src="media/song.png" class="song-img">
+    <h1>Sri Lalitha Amma</h1>
+    <p>Madhavi</p>
+
+     <audio id="audio" controls>
+        <source src="media/song.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <div class="time-display">
+        <span id="current-time">0:00</span>
+        <input type="range" value="0" min="0" max="100" id="progress">
+        <span id="duration">0:00</span>
+    </div>
+    <div class="controls">
+         <i class="fa-solid fa-backward" id="prev"></i>
+         <i class="fa-solid fa-play" id="play"></i>
+         <i class="fa-solid fa-forward" id="next"></i>
+    </div>
+
+    <script>
+        const audio = document.getElementById('audio');
+        const playBtn = document.getElementById('play');
+        const progress = document.getElementById('progress');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const prevBtn = document.getElementById('prev');
+        const nextBtn = document.getElementById('next');
+
+        // Format time helper
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Play/Pause toggle
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playBtn.classList.remove('fa-play');
+                playBtn.classList.add('fa-pause');
+            } else {
+                audio.pause();
+                playBtn.classList.remove('fa-pause');
+                playBtn.classList.add('fa-play');
+            }
+        });
+
+        // Update progress bar and time
+        audio.addEventListener('timeupdate', () => {
+            const progressPercent = (audio.currentTime / audio.duration) * 100;
+            progress.value = progressPercent || 0;
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        });
+
+        // Set duration when metadata loads
+        audio.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audio.duration);
+            progress.max = 100;
+        });
+
+        // Seek functionality
+        progress.addEventListener('input', () => {
+            const seekTime = (progress.value / 100) * audio.duration;
+            audio.currentTime = seekTime;
+        });
+
+        // Audio ended - reset to play button
+        audio.addEventListener('ended', () => {
+            playBtn.classList.remove('fa-pause');
+            playBtn.classList.add('fa-play');
+            audio.currentTime = 0;
+        });
+
+        // Placeholder for next/prev (single song demo)
+        prevBtn.addEventListener('click', () => {
+            audio.currentTime = 0;
+        });
+        nextBtn.addEventListener('click', () => {
+            audio.currentTime = audio.duration;
+        });
+    </script>
+    </div>
+</body>
+</html>
